@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 /*
 题目描述
@@ -33,58 +30,56 @@ ni
 le
 
 */
+
 func main() {
 	var key string
-	var data string
+	var text string
 	for {
-		_, err := fmt.Scan(&key)
-		if err != nil {
+		n, _ := fmt.Scan(&key, &text)
+		if n == 0 {
 			break
 		}
-		_, err = fmt.Scan(&data)
-		if err != nil {
-			break
-		}
-
-		test(key, data)
-	}
-}
-func test(key, data string) {
-	keyUp := strings.ToUpper(key)
-	dataUp := strings.ToUpper(data)
-	fmt.Println(keyUp, dataUp)
-
-	tmp := []byte("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	k := []byte(keyUp)
-	//da := []rune(data)
-	fmt.Println(string(tmp))
-	fmt.Println(len(keyUp))
-	fmt.Println(k)
-	keyTmp := ""
-	// 遍历tmp和keyUp，将tmp中和keyUp重复元素剔除
-	for _, v1 := range tmp {
-	b:
-		for _, v2 := range k {
-			if v1 != v2 {
-				keyTmp += string(v2)
-				break b
+		arr := []rune(key)
+		parr := []rune(text)
+		//
+		m := make(map[rune]int)
+		t := 0
+		alphabet := make([]rune, 26)
+		for i := 0; i < len(arr); i++ {
+			_, ok := m[arr[i]]
+			if ok {
+				continue
+			} else {
+				m[arr[i]] = 1
+				alphabet[t] = arr[i]
+				t++
 			}
 		}
-	}
-	fmt.Println(keyTmp)
 
-	//
-
-	//
-	char := make(map[byte]bool, len(keyUp))
-	for _, v := range k {
-		up := true
-		if v >= 'a' && v <= 'z' {
-			up = false
+		for i := 'a'; i <= 'z'; i++ {
+			_, ok := m[i]
+			if ok {
+				continue
+			} else {
+				m[i] = 1
+				alphabet[t] = i
+				t++
+			}
 		}
-		char[v] = up
-		fmt.Println(string(v))
-	}
-	//sort.Strings(char)
 
+		res := ""
+		for i := 0; i < len(parr); i++ {
+			if parr[i] >= 'A' && parr[i] <= 'Z' {
+				tmp := parr[i] - 'A'
+				v := alphabet[tmp]
+				v = v - 'a' + 'A'
+				res += string(v)
+			} else {
+				tmp := parr[i] - 'a'
+				v := alphabet[tmp]
+				res += string(v)
+			}
+		}
+		fmt.Println(res)
+	}
 }

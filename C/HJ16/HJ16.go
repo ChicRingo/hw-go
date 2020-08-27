@@ -50,23 +50,70 @@ v[j 1 ]*w[j 1 ]+v[j 2 ]*w[j 2 ]+ … +v[j k ]*w[j k ] 。（其中 * 为乘号�
 2200
 
 */
+func Max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+type pack struct {
+	v, p int
+}
+
 func main() {
-	var N, m int
-	_, err := fmt.Scan(&N, &m)
-	if err != nil {
-		return
-	}
-	var v, p, q uint
-
-	//var s = make([]string, 0)
-	//var str string
-
-	for i := 0; i < m; i++ {
-		_, err := fmt.Scan(&v, &p, &q)
-		if err != nil {
-			return
+	var N, m, v, p, q int
+	fmt.Scanln(&N, &m)
+	N /= 10
+	all := make([][]pack, m+1)
+	for i := 1; i < m+1; i++ {
+		fmt.Scanln(&v, &p, &q)
+		v /= 10
+		p *= v
+		if q == 0 {
+			if all[i] == nil {
+				all[i] = make([]pack, 1)
+			}
+			all[i][0] = pack{v, p}
+		} else {
+			if all[q] == nil {
+				all[q] = make([]pack, 2)
+				all[q][1] = pack{v, p}
+			}
+			all[q] = append(all[q], pack{v, p})
 		}
-
 	}
+	dp := make([]int, N+1)
+	for i := 1; i < m+1; i++ {
+		if all[i] == nil {
+			continue
+		}
+		for j := N; j >= all[i][0].v; j-- {
+			v := all[i][0].v
+			p := all[i][0].p
+			dp[j] = Max(dp[j], dp[j-v]+p)
 
+			if len(all[i]) > 1 { //先处理all[i]中的0+1，再处理0+1+2，最后处理0+2
+				v += all[i][1].v
+				p += all[i][1].p
+				if j >= v {
+					dp[j] = Max(dp[j], dp[j-v]+p)
+				}
+				if len(all[i]) > 2 {
+					v += all[i][2].v
+					p += all[i][2].p
+					if j >= v {
+						dp[j] = Max(dp[j], dp[j-v]+p)
+					}
+
+					v -= all[i][1].v
+					p -= all[i][1].p
+					if j >= v {
+						dp[j] = Max(dp[j], dp[j-v]+p)
+					}
+				}
+			}
+		}
+	}
+	fmt.Println(10 * dp[N])
 }
